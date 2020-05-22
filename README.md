@@ -27,6 +27,41 @@ So this is all that happens behind the scenes. It is worth to note that unlike o
 
 BitTorrent is designed to facilitate file transfers among multiple peers across unreliable networks. 
 
+# Part 2 - Metafile
+
+The first thing that one must do in order to act as a Bittorent client is to be able to understand the **metafile** or the **.torrent**.
+
+As suggested by its name, metafile contains metadata or the data about the data you want. So what should this metafile contain?
+- Tracker's url (aka announce url)
+- Path details of the files requested
+
+Well, that's true but the story is not that straight. 
+
+As we know, we gather chunks of requested file from various peers. This means, that we need a way to validate that each chunk acquired is indeed correct. This is again done with the help of the metafile. 
+
+The metafile contains hashed [SHA-1] values for each of these chunks. Once the client receives a chunk, it hashes it and compares it to the 20-byte long hash corresponding to it in the metafile. So the list extends as : 
+- length(s) of the file(s)
+- lengths of the chunks
+- SHA-1 hash values corresponding to the chunks
+
+Apart from these it also contains information like date of creation, author, etc. For a detailed list click [here](https://wiki.theory.org/index.php/BitTorrentSpecification#Metainfo_File_Structure).
+
+### Bencoding
+
+The metafile which contains all this is not a normal text file. It is 'bencoded'.
+Bencoding is a way to specify and organize data in a terse format. It supports the following types: byte strings, integers, lists, and dictionaries. 
+
+The idea is the same as that of JSON. The difference only lies in the way data is formatted.
+
+Basically there are delimiters which are alphabets denoting information like starting or ending of the supported data types.
+
+- "<string length encoded in base ten ASCII>:<string data>" for byte strings
+- "i<integer encoded in base ten ASCII>e" for integers
+- "l<bencoded values>e" for lists
+- "d<bencoded string><bencoded element>e" for dictionaries
+
+For a more detailed guide on bencoding click [here](https://wiki.theory.org/index.php/BitTorrentSpecification#Bencoding).
+
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
