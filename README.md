@@ -42,7 +42,7 @@ As we know, we gather chunks of requested file from various peers. This means, t
 The metafile contains hashed [SHA-1] values for each of these chunks. Once the client receives a chunk, it hashes it and compares it to the 20-byte long hash corresponding to it in the metafile. So the list extends as : 
 - length(s) of the file(s)
 - lengths of the chunks
-- SHA-1 hash values corresponding to the chunks
+- SHA-1 hash values corresponding to the chunks/blocks
 
 Apart from these it also contains information like date of creation, author, etc. For a detailed list click [here](https://wiki.theory.org/index.php/BitTorrentSpecification#Metainfo_File_Structure).
 
@@ -61,6 +61,37 @@ Basically there are delimiters which are alphabets denoting information like sta
 - "d<bencoded string><bencoded element>e" for dictionaries
 
 For a more detailed guide on bencoding click [here](https://wiki.theory.org/index.php/BitTorrentSpecification#Bencoding).
+
+
+# Part 3 - A discussion on protocols
+
+So now have an overview of how things are happening and from where to gather information to request a file. Hence it is a good time to look at how communications take place and what protocols are used.
+
+1. Client to tracker - **User Datagram Protocol (UDP)**
+2. Client/Peer to peer - **Transfer Control Protocol (TCP)**
+
+As you may have seen in [wiki.theory](https://wiki.theory.org/index.php/BitTorrentSpecification#Tracker_HTTP.2FHTTPS_Protocol), originally HTTP was used. However, the use of HTTP induces a significant overhead, which is reduced by the usage of UDP. This is a direct result of the guarantee that HTTP provides that is reliable and in-order delivery of data from sender to receiver. Since communication with the tracker involves the metafile only, which is typically about 100-bytes large, such reliability is not required. However, this also means that peer-to-peer communication must not be based on UDP, hence it works on TCP.
+
+This is also a good time to explain why the tracker URL is also called the announce URL. Since, before the client's first message to the tracker, it is unknown to the connection of peers, with this URL, the new client announces about itself to the existing peers.
+
+### UDP in depth
+
+The tracker's load gets decreased by about 50% with UDP in lieu de TCP. This is a large gain for the server/tracker.
+Although the 4 packets sent can be reduced to 2, these may raise security concerns since a malicious program may spoof the source address of the UDP packet. To prevent this, a connection ID is calculated by server and sent back, which is later required as verification (which works well in the absence of a sniffer).
+
+For more details on connection ID and time-out specification [here](http://www.bittorrent.org/beps/bep_0015.html) is a detailed document on UDP.
+
+# Part 4 - More on Chunks: Blocks and Pieces
+
+So far what we know about the information we receive is that we get chunks of files from peers which are then verified with the help of their own SHA-1 hashed values form the metafile. But there is indeed more to it. 
+
+Initially I had been using the word 'chunk' to avoid any confusion arising between the actual terms - blocks and pieces.
+
+**Blocks** are those portions of files which are actually sent over the network.
+
+**Pieces** are the (larger) portions of files which are verified by the SHA-1 hashed values in the metafile.
+
+This also directly implies that blocks are fragments of pieces, and whenever our Bittorrent client requests something, it is indeed a block and not a piece.
 
 
 ## License
