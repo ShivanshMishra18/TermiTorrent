@@ -93,6 +93,45 @@ Initially I had been using the word 'chunk' to avoid any confusion arising betwe
 
 This also directly implies that blocks are fragments of pieces, and whenever our Bittorrent client requests something, it is indeed a block and not a piece.
 
+# Part 5 - Getting the Peer List
+
+[Note] This part onward we'll look at how we sent our messages and requests to the tracker and clients. Specifically, this part is dedicated to the UDP Protocol.
+
+In this part we look at what should our message look like when we announcing our existence to the tracker in order to get a list of our peers.
+
+As with any other network some protocol has to followed which involves several request-response pairs. In this case we have the UDP protocol. Briefly, following is done: 
+- connecting with tracker     (request)
+- obtaining the connection id (response)
+- sending announce request    (request)
+- obtaining the list of peers (response)
+
+The protocol also says that all values are sent in big endian format and packets are not expected to be of fixed length.
+
+I advise you to refer to [the official protocol](http://www.bittorrent.org/beps/bep_0015.html) as you proceed. 
+Now diving into the details of each message listed above.
+
+## 1. Connection Request
+
+Before any peer list is received, a connection ID needs to be obtained, the significance of which is explained in Part 3.
+
+The connection request is simple in structure. As [BEP](http://www.bittorrent.org/beps/bep_0015.html) describes,
+we need to pass:
+- protocol_id --> value - 0x41727101980
+- action        --> value - 0 (which stands for connect)
+- transaction_id --> value - random 4-byte integer
+
+## 2. Connection Response
+
+The request is also simple and we receive our first piece (not that piece) of information - the connection ID. Our response contains:
+- action        --> value - 0 (which stands for connect)
+- transaction_id --> same as the one we sent
+- connection_id --> 8-byte integer
+
+A good client must always verify the returned transaction_id to be the same as the one sent.
+
+A thing which is prevalent here but we wouldn't be often is that the sizes of both the messages sent and received are constant.
+Also if you went through BEP, you might have noticed the offset in messages. Don't worry about them now, we require them while implementation.
+
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
