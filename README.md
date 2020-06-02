@@ -44,7 +44,7 @@ The metafile contains hashed [SHA-1] values for each of these chunks. Once the c
 - lengths of the chunks
 - SHA-1 hash values corresponding to the chunks/blocks
 
-Apart from these it also contains information like date of creation, author, etc. For a detailed list click [here](https://wiki.theory.org/index.php/BitTorrentSpecification#Metainfo_File_Structure).
+Apart from these it also contains information like date of creation, author, etc. For a detailed list click [here](https://wiki.theory.org/index.php/BitTorrentSpecification#Metainfo_File_Structure). The detailed list would be used later.
 
 ### Bencoding
 
@@ -131,6 +131,32 @@ A good client must always verify the returned transaction_id to be the same as t
 
 A thing which is prevalent here but we wouldn't be often is that the sizes of both the messages sent and received are constant.
 Also if you went through BEP, you might have noticed the offset in messages. Don't worry about them now, we require them while implementation.
+
+## 3. Announce Request
+
+Once the connection ID is obtained, one can request the tracker for the list of peers. The announce request consists of a larger set of parameters sent to tracker discussed below. However, for exact specification, one must refer to BEP:
+- **connection_id** --> one obtained above
+- **action** --> value - 1 (which stands for announce)
+- **transaction_id** --> random 4-byte integer
+- **info_hash** --> SHA-1 hash value of info dictionary in the metafile
+- **peer_id** --> a unique ID to identify your client in the network
+- **downloaded** --> the number of byte you've downloaded in this session.
+- **left** --> the number of bytes you have left to download until you're finished
+- **uploaded** --> he number of bytes you have uploaded in this session
+- **event** --> 0 - none (there are other events also)
+- **ip** --> your ip (0)
+- **key** --> a unique key randomized by the client
+- **num_key** --> max number of peers you want in the reply, -1 for default
+- **port** --> your listening port
+
+One must note here that the info hash is the most important parameter. This is nothing but the hash value of the info dictionary in the metafile. Hash value is sufficient because the chances of two metafiles having same info hash is very low and so is practically usable to uniquely identify what one wants.
+With this, the tracker can send the list of peers.
+
+Peer ID is the parameter which uniquely identifies your client in the network. The various conventions and popular clients' ID can be viewed [here](https://wiki.theory.org/index.php/BitTorrentSpecification#peer_id).
+
+Another thing is the ip. In general this parameter is not necessary as the address of the client can be determined from the IP address from which the HTTP request came. The parameter is only needed in the case where the IP address that the request came in on is not the IP address of the client. This happens if the client is communicating to the tracker through a proxy (or a transparent web proxy/cache.) It also is necessary when both the client and the tracker are on the same local side of a NAT gateway. The reason for this is that otherwise the tracker would give out the internal (RFC1918) address of the client, which is not routable. Therefore the client must explicitly state its (external, routable) IP address to be given out to external peers.
+
+Finally, the official spec says that the ports for bittorrent should be between 6881 and 6889.
 
 
 ## License
