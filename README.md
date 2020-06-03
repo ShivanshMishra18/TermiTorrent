@@ -158,6 +158,30 @@ Another thing is the ip. In general this parameter is not necessary as the addre
 
 Finally, the official spec says that the ports for bittorrent should be between 6881 and 6889.
 
+## 4. Announce Response
+
+Server responds in the following fashion:
+- **action** --> 1
+- **transaction_id** --> must match the above transaction ID
+- **interval** --> no. of seconds you should wait until re-announcing yourself
+- **leechers** --> no. of non-seeder peers (integer)
+- **seeders** --> no. of peers with the entire file (integer)
+- Followed by a variable number of **ip-port** pairs of peers 
+
+##
+
+### # Other things to take care of
+
+Although things are straight forward, life is not so easy. UDP is an unrieble network which means that it is the responsibility of the client/application that the a response is indeed received. It is not a grave matter if you don't receive a response.
+
+Such concerns are tackled by reattempting a request after some time  of waiting. This sometime is suggested by BEP as 15*(2^n) seconds with n going from 1 to 8. This is called **exponential backoff** done to balance the concerns of the message being lost or being delayed due to heavy traffic. For the former problem we would want to reattempt as quickly as possible while for the latter we may not want to spam the server and instead wait.
+
+### # Some references
+
+If you are more interested, you may go through this : 
+- [Protocol packet descriptions](https://www.rasterbar.com/products/libtorrent/udp_tracker_protocol.html)
+- [Extensions for UDP](http://bittorrent.org/beps/bep_0041.html)
+- [BEP](http://www.bittorrent.org/beps/bep_0015.html)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
