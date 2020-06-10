@@ -183,5 +183,29 @@ If you are more interested, you may go through this :
 - [Extensions for UDP](http://bittorrent.org/beps/bep_0041.html)
 - [BEP](http://www.bittorrent.org/beps/bep_0015.html)
 
+# 5. Downloading Files
+
+Now we are at theoretically final stage towards our goal. Having the peer list in hand, we now have to adhere to the Transmission Control Protocol (TCP) to converse with the peers.
+
+Before directly asking for some blocks, we have to create the connection and perform some handshaking. Then we would be ready to gather pieces for various peers. The more the peers, the faster the download (up to a limit).
+
+Note that TCP is different from UDP in the sense that a connection is made between us and the peers.
+
+## 1. Handshaking
+
+The first message sent by the client must be this handshake message.
+
+*handshake: <pstrlen> <pstr> <reserved> <info_hash> <peer_id>*
+- **pstrlen**: string length of <pstr>, as a single raw byte
+- **pstr**: string identifier of the protocol
+- **reserved**: eight (8) reserved bytes. All current implementations use all zeroes. Each bit in these bytes can be used to change the behavior of the protocol
+- **info_hash**: 20-byte SHA1 hash used in UDP also
+- **peer-id**
+
+In version 1.0 of the BitTorrent protocol, pstrlen = 19, and pstr = "BitTorrent protocol". Also if the initiator of the connection receives a handshake in which the peer_id does not match the expected peer-id, then the initiator is expected to drop the connection.
+
+##
+
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
