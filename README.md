@@ -204,8 +204,15 @@ The first message sent by the client must be this handshake message.
 
 In version 1.0 of the BitTorrent protocol, pstrlen = 19, and pstr = "BitTorrent protocol". Also if the initiator of the connection receives a handshake in which the peer_id does not match the expected peer-id, then the initiator is expected to drop the connection.
 
-##
+### Peer Relations / States Between Peers
 
+A handshake does not guarantee that a client would be actually requesting pieces from that peer. Here there are parameters telling the willingness of our client to request/respond and that of peer to request/respond. 
+
+Particularly, a client may want to **choke** a peer when it is responding various other peers already. Similarly, it may **unchoke** a peer as well. 
+
+A client is said to be **interested** in a peer if that peer contains some piece that the client wants. Analogously, it may be **not interested** in those peers which do not possess any required information.
+
+It should also be noted that each peer has perfect information, i.e., for any pair of peer(client) and peer each knows if the other one is interested in it or if it has choked it, in addition to what it thinks about that peer.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
