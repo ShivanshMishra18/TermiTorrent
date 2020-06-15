@@ -214,5 +214,42 @@ A client is said to be **interested** in a peer if that peer contains some piece
 
 It should also be noted that each peer has perfect information, i.e., for any pair of peer(client) and peer each knows if the other one is interested in it or if it has choked it, in addition to what it thinks about that peer.
 
+## 2. Message Formats
+
+Once done with the handshaking, messages for defining the states of interest, availability of packets, requesting for blocks, responding with blocks and cancelling requests can be transmitted to and from the responding peer.
+
+The format of messages is as below and the actual context and content is in the payload.
+
+*<length_prefix> <message_id> <payload>*
+- length prefix is a 4-byte integer indicating the length of message excluding these 4 bytes
+- single byte decimal value
+- some messages do not have payload
+
+Following are the various messages:
+- **keep-alive** - *<len=0000>*
+- **choke** - *<len=0001><id=0>* 
+- **unchoke** - *<len=0001><id=1>* 
+- **interested** - *<len=0001><id=2>* 
+- **not interested** - *<len=0001><id=3>* 
+- **have** - *<len=0005><id=4><piece index>* 
+- **bitfield** - *<len=0001+X><id=5><piece index>*
+- **request** - *<len=0013><id=6><index><begin><length>*
+- **piece** - *<len=0009+X><id=7><index><begin><block>*
+- **cancel** - *<len=13><id=8><index><begin><length>*
+- **port** - *<len=0003><id=9><listen-port>*
+
+The meanings of the first five types of messages are self-explanatory. It is also obvious that they do not require any payload. 
+
+The payload of the *have* message is the zero-based index of a piece that has just been successfully downloaded and verified via the hash. 
+
+The *bitfield* message is variable length, where X is the length of the bit field. The payload is a bit field representing the pieces that have been successfully downloaded. The high bit in the first byte corresponds to piece index 0. Bits that are cleared indicated a missing piece, and set bits indicate a valid and available piece. Spare bits at the end are set to zero. 
+
+The *request* message requests for a block of data which is described with the piece index of which that block is a part, and the offset and length within that piece.
+
+The *piece* message is a response to the *request* message with information of piece number, offset within the piece and the block data. X is the length of he block.
+
+The *cancel* message is used to cancel block requests.
+
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
