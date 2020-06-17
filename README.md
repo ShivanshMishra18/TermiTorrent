@@ -250,6 +250,17 @@ The *piece* message is a response to the *request* message with information of p
 
 The *cancel* message is used to cancel block requests.
 
+## 3. Requesting Pieces
+
+Now, all that we need to do is ask for pieces, since we know the form of messages we will be sending and receiving. However, pieces are not requested arbitrarily. Following are some ways for requesting:
+- As soon as we come to know about the pieces a peer has, we can directly ask for all those pieces which we do not have. But this becomes as bad as transferring data from a single source in case of speed which is against the spirit of the BitTorrent idea.
+- We could also divide the pieces almost equally among the peers. However, this does not give us a good chance to exploit the speeds a few peers are blessed with. The slowest peer can become the bottleneck.
+- Another good strategy can be asking for a piece from any peer as soon as it is free. (I will be implementing this)
+
+However, most of the professional software applications use the following strategy. 
+1. **Random start**: A few (typically 1 piece) is requested randomly.
+2. **Rarest first**: One does not know how long a peer may remain in the swarm. In such cases it becomes essential that a random piece be downloaded first. Hence, peers with rare pieces are sent request for those.
+3. **Endgame**: It may be possible that the last remaining pieces have been requested from the slower peers instead of the faster ones, the latter ones remaining free. What endgame suggests is to request the remaining few pieces from all the peers and cancel from others as one peer arrives with the message.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
