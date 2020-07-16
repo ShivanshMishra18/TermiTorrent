@@ -4,18 +4,28 @@ Yes, you read that right. This time it will be a torrent client.
 So, here's the plan.
 I have most of my projects done with creating a back end, doing something and again creating a back end doing something different. However, a few days ago I wanted to know the difference between (mu)torrent and BitTorent, and I came to know that BitTorent is just a protocol to transfer content while the former is a client which uses this protocol to send and receive the content.
 
-With this new repo started, your friendly neighborhood NodeFan would be first going through how BitTorrent works in a very Layman's way then for a few days I will be putting details about the main aspects of the protocol.
+With this new repo started, *your friendly neighborhood NodeFan* would be first going through how BitTorrent works in a very Layman's way then for a few days I will be putting details about the main aspects of the protocol.
 
 It will take (I don't know how long) until I find a good way to get the actual implementations done.
 
 # Part 1 - Introduction
 
-BitTorrent is a **peer-to-peer** file-sharing protocol designed by Bram Cohen. 
+BitTorrent is a hybrid **peer-to-peer** file-sharing protocol designed by Bram Cohen, where *a central entity is necessary to provide parts of the offered network services*.
+
+ 
+| ![architecture](docs/BitTorrent_Architecture.png)  | 
+|:--:| 
+| *BitTorrent Architecture* |
 
 What this means is that the network consists of several peers. Peers are nothing but the machines participating in the sharing process which upload and download files.
 
 This doesn't mean that there is an absence of a moderator. This moderator is called **tracker** in the terminology of the protocol. However, the role of the tracker is minimal.
 
+The BitTorrent architecture normally consists of the following entities:   
+- a static metainfo file (a torrent file)
+- a tracker
+- an original downloader (seed)
+- the end user downloader (leecher)
 
 Let's have a look at how your file gets downloaded when you use a Bittorent client :
 1. Your client reads the .torrent file
@@ -26,6 +36,11 @@ Let's have a look at how your file gets downloaded when you use a Bittorent clie
 So this is all that happens behind the scenes. It is worth to note that unlike other servers, the tracker is not as useful. This is because your request is fulfilled by peers and not the tracker.
 
 BitTorrent is designed to facilitate file transfers among multiple peers across unreliable networks. 
+
+| ![workflow](docs/workflow.png) | 
+|:--:| 
+| *Basic Workflow* |
+
 
 # Part 2 - Metafile
 
@@ -45,6 +60,12 @@ The metafile contains hashed [SHA-1] values for each of these chunks. Once the c
 - SHA-1 hash values corresponding to the chunks/blocks
 
 Apart from these it also contains information like date of creation, author, etc. For a detailed list click [here](https://wiki.theory.org/index.php/BitTorrentSpecification#Metainfo_File_Structure). The detailed list would be used later.
+
+**- sample metafile :**
+```
+d8:announce43:udp://tracker.coppersurfer.tk:6969/announce10:created by13:uTorrent/187013:creation datei1462355939e8:encoding5:UTF-84:infod6:lengthi124234e4:name9:puppy.jpg12:piece lengthi16384e6:pieces160:TâkŠ/„_(ÁSh%°Ïð+]q'BîÙ :°öïp"¶j–Â‡ü§1-g"¼s(š›ŒVÃð=•h¯maœnF¯2ý…°N
+·Ç©Ô_‘"2ûþ¤'‘wOåì•-;×¢µØ‘šºL&ùÕðó0ëD_9·í	\¨Oæh,n5gØ(©‘ä»‘,•\ß°¥%¼šU†äžC>ØÙdf†¯ee
+``` 
 
 ### Bencoding
 
@@ -261,6 +282,14 @@ However, most of the professional software applications use the following strate
 1. **Random start**: A few (typically 1 piece) is requested randomly.
 2. **Rarest first**: One does not know how long a peer may remain in the swarm. In such cases it becomes essential that a random piece be downloaded first. Hence, peers with rare pieces are sent request for those.
 3. **Endgame**: It may be possible that the last remaining pieces have been requested from the slower peers instead of the faster ones, the latter ones remaining free. What endgame suggests is to request the remaining few pieces from all the peers and cancel from others as one peer arrives with the message.
+
+## Changelog
+[Read the changelog here 🡒](https://github.com/ShivanshMishra18/TermiTorrent/CHANGELOG.md)
+
+## Features to be added
+- [ ] Develop a GUI for entire workflow
+- [ ] Support the feature of uploading files to the network
+- [ ] Decrease dependency on Seeder by utilising trackers as Leecher
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
