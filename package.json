@@ -1,0 +1,28 @@
+{
+  "name": "termitorrent",
+  "version": "1.0.0",
+  "description": "A terminal based bitTorrent client (for educational purposes only)",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShivanshMishra18/TermiTorrent.git"
+  },
+  "keywords": [
+    "torrent"
+  ],
+  "author": "Shivansh Mishra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ShivanshMishra18/TermiTorrent/issues"
+  },
+  "homepage": "https://github.com/ShivanshMishra18/TermiTorrent#readme",
+  "dependencies": {
+    "bencode": "^2.0.1"
+  }
+}
