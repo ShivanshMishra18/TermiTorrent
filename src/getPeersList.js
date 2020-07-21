@@ -1,6 +1,6 @@
-
 const dgram = require('dgram');
-const udpSendConnectRequest = require('./udpUtils/udpSendConnectRequest')
+const udpSendConnectRequest = require('./udpUtils/udpSendConnectRequest');
+const udpSendAnnounceRequest = require('./udpUtils/udpSendAnnounceRequest');
 
 const CONNECT = 0;
 const ANNOUNCE = 1;
@@ -23,17 +23,27 @@ module.exports = torrent => {
                 case CONNECT: {
                     console.log('[+] Connect response received');
                     console.log(response);
-                    return resolve();
+
+                    // Obtain connection id buffer
+                    const connectionId = response.slice(8);
+
+                    // Send announce message
+                    udpSendAnnounceRequest(socket, targetURL, connectionId, torrent);
+
+                    break;
                 }
                 
                 // Response for announce request
                 case ANNOUNCE: {
                     console.log('[+] Announce response received');
+                    console.log(response);
+                    return resolve();
+
+                    break;
                 }
 
                 default : {
                     console.log('[*] Unkown UDP response received');
-                    return reject();
                 }
             }
         });
