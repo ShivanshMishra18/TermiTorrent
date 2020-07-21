@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const parser = require('url').parse;
-const { getInfoHash, getDownloadSize } = require('../torrentUtils');
+const { getInfoHash, getDownloadSize } = require('../torrentUtils/torrentUtils');
 const udpGetPeerId = require('./udpGetPeerId');
 
 const PORT = 6886   // Any port from 6881 to 6889 is valid
