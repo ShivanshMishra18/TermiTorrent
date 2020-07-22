@@ -18,4 +18,8 @@ module.exports.handshakeMessage = torrent => {
     udpGetPeerId().copy(buf, 48);
     
     return buf;
-  };
+};
+
+module.exports.verifyHandshake = buf => {
+    return buf.slice(1,buf.readUInt8(0)+1).toString() === 'BitTorrent protocol';
+};

@@ -1,8 +1,13 @@
 const net = require('net') ;
-const { handshakeMessage } = require('./tcpUtils/tcpMessages');
+const { handshakeMessage, verifyHandshake } = require('./tcpUtils/tcpMessages');
+const { CHOKE, UNCHOKE, INTERESTED, NOT_INTERESTED, BITFIELD, HAVE, REQUEST, PIECE, CANCEL } = require('./tcpUtils/messageTypes');
 
 
 module.exports = (peer, torrent) => {
+
+    // Create variables which will be used inside closure
+    let allMsgBuf = Buffer.alloc(0);
+    let handshaked = false;
 
     // Create tcp socket
     const socket = new net.Socket();
@@ -15,10 +20,104 @@ module.exports = (peer, torrent) => {
         socket.write(handshakeMessage(torrent));
     });
 
-    // Read response from handshake ( for now )
+    // Here we act upon the type of msg
     socket.on('data', recvBuf => {
-        console.log(recvBuf, recvBuf.length);
-        return;
+
+        console.log('Message received through TCP');
+        
+        // Find message length for non handshakes
+        const getMsgLength = () => allMsgBuf.readInt32BE(0) + 4;
+
+        // Join incoming buffer to full buffer 
+        allMsgBuf = Buffer.concat([allMsgBuf, recvBuf]);
+
+        if (!handshaked) 
+        {
+            // Extract single message
+            const msgLen = allMsgBuf.readUInt8(0) + 49;
+            const msg = allMsgBuf.slice(0, msgLen);
+            allMsgBuf = allMsgBuf.slice(msgLen);
+
+            // Verify handshake
+            if (verifyHandshake(msg)) {
+                console.log('[+] Handshake completed');
+                handshaked = true;
+            } else {
+                console.log('[-] Unexpected failure. Abort manually.');
+            } 
+        } 
+        else 
+        {
+            // Extract single message as long as it is valid and work
+            while (allMsgBuf.length>=4 && allMsgBuf.length>=getMsgLength()) 
+            {
+                // Consider single message
+                const msgLen = getMsgLength();
+                const msg = allMsgBuf.slice(0, msgLen);
+                allMsgBuf = allMsgBuf.slice(msgLen);
+
+                // Leave aside keep-alive connection
+                if (msg.length === 4)
+                    continue;
+
+                // Handle message according to type
+                switch (msg.readUInt8(4)) {
+                    case CHOKE: {
+                        console.log('chokeHandler');
+                        break;
+                    }
+                    case UNCHOKE: {
+                        console.log('unchokeHandler');
+                        break;
+                    }
+                    case INTERESTED: {
+                        console.log('interestedHandler');
+                        break;
+                    }
+                    case NOT_INTERESTED: {
+                        console.log('notinterestedHandler');
+                        break;
+                    }
+                    case HAVE: {
+                        console.log('haveHandler');
+                        break;
+                    }
+                    case BITFIELD: {
+                        console.log('bitfieldHandler');
+                        break;
+                    }
+                    case REQUEST: {
+                        console.log('requestHandler');
+                        break;
+                    }
+                    case PIECE: {
+                        console.log('pieceHandler');
+                        break;
+                    }
+                    case CANCEL: {
+                        console.log('cancelHandler');
+                        break;
+                    }
+                    case PORT: {
+                        console.log('portHandler');
+                        break;
+                    }
+                    default: {
+                        console.log('[*] Unknown message received');
+                    }
+                }
+            }
+        }
+
     });
 
 }
+
+/*
+    Note - As every incoming message except handshake and keep-alive
+        has a type from bytes 1-4, we can identify them by decoding
+        those bytes. However, keep-alive is identified by its pstrlen
+        which is =0, and we know that handshake is always the firts
+        message to arrive. By exploiting closures, we create a variable
+        which tells whether handshake has taken or not.
+*/
