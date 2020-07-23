@@ -20,6 +20,25 @@ module.exports.handshakeMessage = torrent => {
     return buf;
 };
 
+
 module.exports.verifyHandshake = buf => {
     return buf.slice(1,buf.readUInt8(0)+1).toString() === 'BitTorrent protocol';
+};
+
+
+module.exports.requestBlockMessage = (index, offset) => {
+    const buf = Buffer.alloc(17);
+    
+    // pstrlen
+    buf.writeUInt32BE(13, 0);
+    // pstr
+    buf.writeUInt8(6, 4);
+    // index
+    buf.writeUInt32BE(index, 5);
+    // begin
+    buf.writeUInt32BE(offset, 9);
+    // length
+    buf.writeUInt32BE(Math.pow(2,14), 13);
+    
+    return buf;
 };

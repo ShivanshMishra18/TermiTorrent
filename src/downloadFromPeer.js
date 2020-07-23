@@ -1,5 +1,5 @@
 const net = require('net') ;
-const { handshakeMessage, verifyHandshake } = require('./tcpUtils/tcpMessages');
+const { handshakeMessage, verifyHandshake, requestBlockMessage } = require('./tcpUtils/tcpMessages');
 const { CHOKE, UNCHOKE, INTERESTED, NOT_INTERESTED, BITFIELD, HAVE, REQUEST, PIECE, CANCEL } = require('./tcpUtils/messageTypes');
 
 
@@ -68,6 +68,7 @@ module.exports = (peer, torrent) => {
                     }
                     case UNCHOKE: {
                         console.log('unchokeHandler');
+                        socket.write(requestBlockMessage(0,0));
                         break;
                     }
                     case INTERESTED: {
@@ -92,6 +93,7 @@ module.exports = (peer, torrent) => {
                     }
                     case PIECE: {
                         console.log('pieceHandler');
+                        console.log('Block received!', msg);
                         break;
                     }
                     case CANCEL: {
@@ -104,6 +106,7 @@ module.exports = (peer, torrent) => {
                     }
                     default: {
                         console.log('[*] Unknown message received');
+                        console.log(msg);
                     }
                 }
             }
