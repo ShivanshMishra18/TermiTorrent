@@ -1,5 +1,5 @@
 const net = require('net') ;
-const { handshakeMessage, verifyHandshake, requestBlockMessage } = require('./tcpUtils/tcpMessages');
+const { handshakeMessage, verifyHandshake, requestBlockMessage, interestedMessage } = require('./tcpUtils/tcpMessages');
 const { CHOKE, UNCHOKE, INTERESTED, NOT_INTERESTED, BITFIELD, HAVE, REQUEST, PIECE, CANCEL } = require('./tcpUtils/messageTypes');
 
 
@@ -42,6 +42,7 @@ module.exports = (peer, torrent) => {
             if (verifyHandshake(msg)) {
                 console.log('[+] Handshake completed');
                 handshaked = true;
+                socket.write(interestedMessage());
             } else {
                 console.log('[-] Unexpected failure. Abort manually.');
             } 
@@ -68,7 +69,7 @@ module.exports = (peer, torrent) => {
                     }
                     case UNCHOKE: {
                         console.log('unchokeHandler');
-                        socket.write(requestBlockMessage(0,0));
+                        // socket.write(requestBlockMessage(0,0));
                         break;
                     }
                     case INTERESTED: {
