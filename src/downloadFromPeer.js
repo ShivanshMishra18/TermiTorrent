@@ -1,9 +1,13 @@
 const net = require('net') ;
 const { handshakeMessage, verifyHandshake, requestBlockMessage, interestedMessage } = require('./tcpUtils/tcpMessages');
 const { CHOKE, UNCHOKE, INTERESTED, NOT_INTERESTED, BITFIELD, HAVE, REQUEST, PIECE, CANCEL } = require('./tcpUtils/messageTypes');
+const PeerInventory = require('./dataStructures/PeerInventory')
 
 
 module.exports = (peer, torrent) => {
+
+    // Create local peer inventory object
+    const peerInventory = new PeerInventory(torrent);
 
     // Create variables which will be used inside closure
     let allMsgBuf = Buffer.alloc(0);
