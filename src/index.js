@@ -13,7 +13,7 @@ async function run() {
     console.log(peersList);
 
     // Step 3 - Connect to peers and request data
-    downloadFromPeer(peersList[2], torrent);
+    downloadFromPeer(peersList[3], torrent);
 
 }
 

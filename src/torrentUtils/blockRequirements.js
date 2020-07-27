@@ -1,4 +1,5 @@
 const bignum = require('bignum');
+const { getDownloadSize } = require('./torrentUtils');
 
 module.exports.BLOCK_LENGTH = Math.pow(2, 14);
 
@@ -6,7 +7,7 @@ module.exports.BLOCK_LENGTH = Math.pow(2, 14);
 // @args - [ torrent(decoded), piece index ]
 // @ret  - [ length of the piece for a given piece index ]
 module.exports.getPieceLength = (torrent, pieceIndex) => {
-    const totalLength = bignum.fromBuffer(this.size(torrent)).toNumber();
+    const totalLength = bignum.fromBuffer(getDownloadSize(torrent)).toNumber();
     const pieceLength = torrent.info['piece length'];
 
     const lastPieceLength = totalLength % pieceLength;

@@ -1,7 +1,8 @@
 const net = require('net') ;
 const { handshakeMessage, verifyHandshake, requestBlockMessage, interestedMessage } = require('./tcpUtils/tcpMessages');
 const { CHOKE, UNCHOKE, INTERESTED, NOT_INTERESTED, BITFIELD, HAVE, REQUEST, PIECE, CANCEL } = require('./tcpUtils/messageTypes');
-const PeerInventory = require('./dataStructures/PeerInventory')
+const PeerInventory = require('./dataStructures/PeerInventory');
+const { bitfieldHandler } = require('./tcpUtils/tcpHandlers');
 
 
 module.exports = (peer, torrent) => {
@@ -90,6 +91,9 @@ module.exports = (peer, torrent) => {
                     }
                     case BITFIELD: {
                         console.log('bitfieldHandler');
+                        // console.log(msg);
+                        bitfieldHandler(msg, peerInventory);
+                        // console.log(peerInventory.available.length);
                         break;
                     }
                     case REQUEST: {

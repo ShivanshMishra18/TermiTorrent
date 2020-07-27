@@ -43,6 +43,7 @@ module.exports.requestBlockMessage = (index, offset) => {
     return buf;
 };
 
+
 module.exports.interestedMessage = () => {
     const buf = Buffer.alloc(5);
  	
