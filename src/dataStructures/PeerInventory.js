@@ -44,4 +44,8 @@ module.exports = class {
         return this.available.length > 0;
     }
 
+    pieceSize() {
+        return this.privTorrent.info['piece length'];
+    }
+
 };

@@ -2,7 +2,7 @@ const net = require('net') ;
 const { handshakeMessage, verifyHandshake, requestBlockMessage, interestedMessage } = require('./tcpUtils/tcpMessages');
 const { CHOKE, UNCHOKE, INTERESTED, NOT_INTERESTED, BITFIELD, HAVE, REQUEST, PIECE, CANCEL } = require('./tcpUtils/messageTypes');
 const PeerInventory = require('./dataStructures/PeerInventory');
-const { bitfieldHandler, haveHandler } = require('./tcpUtils/tcpHandlers');
+const { bitfieldHandler, haveHandler, unchokeHandler, chockeHandler } = require('./tcpUtils/tcpHandlers');
 
 
 module.exports = (peer, torrent, fd, globalInventory) => {
@@ -70,14 +70,12 @@ module.exports = (peer, torrent, fd, globalInventory) => {
                 switch (msg.readUInt8(4)) {
                     case CHOKE: {
                         console.log('chokeHandler');
-                        peerInventory.chocked = true;
-                        socket.write(interestedMessage());
+                        chokeHandler(socket, peerInventory);
                         break;
                     }
                     case UNCHOKE: {
                         console.log('unchokeHandler');
-                        peerInventory.chocked = false;
-                        // socket.write(requestBlockMessage(0,0));
+                        unchokeHandler(socket, peerInventory);
                         break;
                     }
                     case INTERESTED: {
