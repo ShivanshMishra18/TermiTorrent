@@ -28,3 +28,11 @@ module.exports.getInfoHash = torrent => {
 module.exports.getDownloadSize = torrent => {
     return bignum.toBuffer(torrent.info.length, { size: 8 });
 }
+
+
+// @args - [ torrent(decoded) ]
+// @ret  - [ file name for download ]
+// Returns file name where data will be written
+module.exports.getFilename = torrent => {
+    return torrent.info.name;
+}

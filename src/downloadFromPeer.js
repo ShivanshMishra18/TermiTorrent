@@ -5,7 +5,7 @@ const PeerInventory = require('./dataStructures/PeerInventory');
 const { bitfieldHandler, haveHandler } = require('./tcpUtils/tcpHandlers');
 
 
-module.exports = (peer, torrent) => {
+module.exports = (peer, torrent, fd, globalInventory) => {
 
     // Create local peer inventory object
     const peerInventory = new PeerInventory(torrent);
@@ -106,7 +106,8 @@ module.exports = (peer, torrent) => {
                     }
                     case PIECE: {
                         console.log('pieceHandler');
-                        console.log('Block received!', msg);
+                        // pieceHandler()
+                        // console.log('Block received!', msg);
                         break;
                     }
                     case CANCEL: {
