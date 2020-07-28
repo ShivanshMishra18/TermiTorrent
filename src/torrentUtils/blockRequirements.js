@@ -41,3 +41,10 @@ module.exports.getBlockLength = async (torrent, pieceIndex, blockIndex) => {
 
     return this.BLOCK_LENGTH;  
 };
+
+
+// @args - [ torrent(decoded) ]
+// @ret  - [ total number of pieces ]
+module.exports.getNumOfPieces = torrent => {
+    return torrent.info.pieces.length / 20;
+}
