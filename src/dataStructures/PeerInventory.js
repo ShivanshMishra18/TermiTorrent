@@ -1,3 +1,4 @@
+const bignum = require('bignum');
 const { getBlocksPerPiece, getBlockLength, BLOCK_LENGTH } = require("../torrentUtils/blockRequirements");
 
 /*
@@ -41,7 +42,7 @@ module.exports = class {
     }
 
     isEmpty() {
-        return this.available.length > 0;
+        return this.available.length == 0;
     }
 
     pieceSize() {

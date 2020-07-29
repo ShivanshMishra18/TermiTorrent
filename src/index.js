@@ -9,6 +9,7 @@ async function run() {
 
     // Step 1 - Decode torrent file
     const torrent = decodeTorrent();
+    // console.log('To be downloaded', torrent.info['length']);
 
     // Step 2 - Complete all UDP transactions and get peer ip/ports
     const peersList = await getPeersList(torrent);
@@ -20,8 +21,11 @@ async function run() {
 
     // Step 4 - Connect to peers and request data
     // { ip: '211.15.14.88', port: 59350 } sends have message [ for test help ]
-    console.log(peersList[8]);
-    downloadFromPeer(peersList[8], torrent, fd, globalInventory);
+    // console.log(peersList[1]);
+    // console.log('Custom: { ip: 37.15.72.216, port: 51228 }');
+    // downloadFromPeer({ ip: '37.15.72.216', port: 51228 }, torrent, fd, globalInventory);
+
+    peersList.forEach( peer => downloadFromPeer(peer, torrent, fd, globalInventory) );
 
 }
 

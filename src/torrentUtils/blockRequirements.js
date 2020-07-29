@@ -30,8 +30,8 @@ module.exports.getBlocksPerPiece = (torrent, pieceIndex) => {
 
 // @args - [ torrent(decoded), piece index, block index ]
 // @ret  - [ length of the block for a given block index with given piece index ]
-module.exports.getBlockLength = async (torrent, pieceIndex, blockIndex) => {
-    const pieceLength = await this.getPieceLength(torrent, pieceIndex);
+module.exports.getBlockLength = (torrent, pieceIndex, blockIndex) => {
+    const pieceLength = this.getPieceLength(torrent, pieceIndex);
 
     const lastBlockLength = pieceLength % this.BLOCK_LENGTH;
     const lastBlockIndex = Math.floor(pieceLength / this.BLOCK_LENGTH);

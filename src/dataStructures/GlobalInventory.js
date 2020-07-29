@@ -12,11 +12,13 @@ module.exports = class {
         function containerBuilder() {
             const numOfPieces = getNumOfPieces(torrent);
             const outerArray = new Array(numOfPieces).fill(null);
-            outerArray.map((val,idx) => new Array(getBlocksPerPiece(torrent, idx)).fill(false));
+            return outerArray.map((val,idx) => new Array(getBlocksPerPiece(torrent, idx)).fill(false));
         }
 
         this.__requested = containerBuilder();
         this.__received = containerBuilder();
+        this.__downloadSize = torrent.info['length'];
+        this.__downloaded = 0;
     }
 
     blockReceived(pieceIndex, blockOffset) {
@@ -43,6 +45,11 @@ module.exports = class {
 
     allReceived() {
         return this.__received.every(piece => piece.every(block => block));
+    }
+
+    updateDownloaded(size) {
+        this.__downloaded = this.__downloaded + size;
+        console.log('Completed:', this.__downloaded, 'of', this.__downloadSize);
     }
 
 };

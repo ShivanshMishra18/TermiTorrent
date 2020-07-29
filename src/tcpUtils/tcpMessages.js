@@ -26,7 +26,7 @@ module.exports.verifyHandshake = buf => {
 };
 
 
-module.exports.requestBlockMessage = (index, offset) => {
+module.exports.requestBlockMessage = (index, offset, size) => {
     const buf = Buffer.alloc(17);
     
     // pstrlen
@@ -38,7 +38,9 @@ module.exports.requestBlockMessage = (index, offset) => {
     // begin
     buf.writeUInt32BE(offset, 9);
     // length
-    buf.writeUInt32BE(Math.pow(2,14), 13);
+    buf.writeUInt32BE(size, 13);
+
+    // console.log(buf);
     
     return buf;
 };

@@ -1,4 +1,6 @@
-const { interestedMessage } = require("./tcpMessages");
+const fs = require('fs');
+const { interestedMessage, requestBlockMessage } = require("./tcpMessages");
+
 
 module.exports.bitfieldHandler = (buf, peerInventory) => {
     // let counter = 0;
@@ -31,8 +33,6 @@ module.exports.haveHandler = (buf, peerInventory) => {
     // Push piece index
     peerInventory.push(pieceIndex);
 
-    console.log('Piece index', pieceIndex, 'found');
-    console.log(buf);
 }
 
 
@@ -48,25 +48,54 @@ module.exports.unchokeHandler = (socket, peerInventory, globalInventory) => {
 }
 
 
-module.exports.pieceHandler = (buf, fd, peerInventory, globalInventory) => {
+module.exports.pieceHandler = (socket, buf, fd, peerInventory, globalInventory) => {
     
     // Extract information from piece message
-    
+    const { pieceIndex, blockOffset, data } = this.unboxBlockMessage(buf);
+
     // Write piece to file using file descriptor passed
+    const totalOffset = pieceIndex*peerInventory.pieceSize() + blockOffset;
+    fs.write(fd, data, 0, data.length, totalOffset, ()=>{});
 
     // Update global inventory
+    globalInventory.blockReceived(pieceIndex, blockOffset);
+    globalInventory.updateDownloaded(data.length);
 
     // Request for next block (if remaining otherwise close connection)
+    if (globalInventory.allReceived()) {
+        console.log('[+] Download complete');
+        socket.end();
+    }
 
+    this.requestNextBlock(socket, peerInventory, globalInventory);
 }
 
 
 module.exports.requestNextBlock = (socket, peerInventory, globalInventory) => {
 
+    // console.log(peerInventory);
+
+    // If peer has choked us then return 
+    if (peerInventory.chocked) {
+        return;
+    }
+
+    // If peer has something to offer, request for a block 
+    // which has not been requested from any other peer
+    while (!peerInventory.isEmpty()) {
+        const { index, begin, length } = peerInventory.pop();
+        if (globalInventory.isRequired(index, begin)) {
+            globalInventory.blockRequested(index, begin);
+            socket.write(requestBlockMessage(index, begin, length));
+            // console.log('Block requested', index, begin, length);
+            break;
+        }
+    }
+
 }
 
 
-module.exports.unboxBlock = buf => {
+module.exports.unboxBlockMessage = buf => {
     return {
         pieceIndex: buf.readUInt32BE(5),
         blockOffset: buf.readUInt32BE(9),

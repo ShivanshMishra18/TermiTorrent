@@ -1,11 +1,14 @@
 const net = require('net') ;
-const { handshakeMessage, verifyHandshake, requestBlockMessage, interestedMessage } = require('./tcpUtils/tcpMessages');
+const { handshakeMessage, verifyHandshake, interestedMessage } = require('./tcpUtils/tcpMessages');
 const { CHOKE, UNCHOKE, INTERESTED, NOT_INTERESTED, BITFIELD, HAVE, REQUEST, PIECE, CANCEL } = require('./tcpUtils/messageTypes');
 const PeerInventory = require('./dataStructures/PeerInventory');
-const { bitfieldHandler, haveHandler, unchokeHandler, chockeHandler } = require('./tcpUtils/tcpHandlers');
+const { bitfieldHandler, haveHandler, unchokeHandler, chokeHandler, pieceHandler } = require('./tcpUtils/tcpHandlers');
 
 
 module.exports = (peer, torrent, fd, globalInventory) => {
+
+    // console.log(globalInventory);
+    // console.log(peer);
 
     // Create local peer inventory object
     const peerInventory = new PeerInventory(torrent);
@@ -23,12 +26,13 @@ module.exports = (peer, torrent, fd, globalInventory) => {
     // Send a handshake message to the peer
     socket.connect(peer.port, peer.ip, () => {
         socket.write(handshakeMessage(torrent));
+        console.log('Handshake initiated');
     });
 
     // Here we act upon the type of msg
     socket.on('data', recvBuf => {
 
-        console.log('Message received through TCP');
+        // console.log('Message received through TCP');
         
         // Find message length for non handshakes
         const getMsgLength = () => allMsgBuf.readInt32BE(0) + 4;
@@ -75,7 +79,7 @@ module.exports = (peer, torrent, fd, globalInventory) => {
                     }
                     case UNCHOKE: {
                         console.log('unchokeHandler');
-                        unchokeHandler(socket, peerInventory);
+                        unchokeHandler(socket, peerInventory, globalInventory);
                         break;
                     }
                     case INTERESTED: {
@@ -104,7 +108,7 @@ module.exports = (peer, torrent, fd, globalInventory) => {
                     }
                     case PIECE: {
                         console.log('pieceHandler');
-                        // pieceHandler()
+                        pieceHandler(socket, msg, fd, peerInventory, globalInventory);
                         // console.log('Block received!', msg);
                         break;
                     }
