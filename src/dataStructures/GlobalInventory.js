@@ -40,6 +40,9 @@ module.exports = class {
             this.__requested = this.__received.map(piece => piece);
         }
 
+        console.log('pieceIndex:', pieceIndex, ' blockIndex:', blockIndex);
+        // console.log('Matrix size:', this.__requested.length, 'x', this.__requested[0].length);
+
         return !this.__requested[pieceIndex][blockIndex];
     }
 

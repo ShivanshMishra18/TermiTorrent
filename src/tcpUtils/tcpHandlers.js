@@ -14,7 +14,7 @@ module.exports.bitfieldHandler = (buf, peerInventory) => {
     for (let i=5; i<buf.length; i++) {
         let x = buf.readUInt8(i);
         for (let j=0; j<8; j++) {
-            if (x & (1<<j)) {
+            if ((x&(1<<j))===1) {
                 peerInventory.push(i*8 + 7 - j);
                 // counter++;
             }

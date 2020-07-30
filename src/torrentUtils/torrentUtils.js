@@ -26,7 +26,8 @@ module.exports.getInfoHash = torrent => {
 // @ret  - [ size for download ]
 // Returns total download size [ right now only for single torrent ]
 module.exports.getDownloadSize = torrent => {
-    return bignum.toBuffer(torrent.info.length, { size: 8 });
+    // console.log(torrent.info['length']);
+    return bignum.toBuffer(torrent.info['length'], { size: 8 });
 }
 
 

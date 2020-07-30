@@ -22,6 +22,10 @@ module.exports = class {
     // Have or Bitfield messages are received
     push(pieceIndex) {
         const numOfBlocks = getBlocksPerPiece(this.privTorrent, pieceIndex);
+        if (pieceIndex >= 725) {
+            console.log('*************************************', pieceIndex);
+            return;
+        }
 
         for (let i=0; i<numOfBlocks; i++) {
             const block = {
