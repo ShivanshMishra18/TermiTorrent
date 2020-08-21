@@ -284,7 +284,7 @@ However, most of the professional software applications use the following strate
 3. **Endgame**: It may be possible that the last remaining pieces have been requested from the slower peers instead of the faster ones, the latter ones remaining free. What endgame suggests is to request the remaining few pieces from all the peers and cancel from others as one peer arrives with the message.
 
 ## Changelog
-[Read the changelog here 🡒](https://github.com/ShivanshMishra18/TermiTorrent/CHANGELOG.md)
+[Read the changelog here 🡒](https://github.com/ShivanshMishra18/TermiTorrent/blob/master/CHANGELOG.md)
 
 ## Features to be added
 - [ ] Develop a GUI for entire workflow
